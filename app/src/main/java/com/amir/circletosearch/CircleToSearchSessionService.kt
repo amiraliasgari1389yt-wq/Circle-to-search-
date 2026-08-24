@@ -1,5 +1,6 @@
 package com.amir.circletosearch
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.service.voice.VoiceInteractionSession
@@ -21,7 +22,7 @@ class CircleToSearchSession(
 
         val prefs = sessionService.getSharedPreferences(
             "circle_to_search",
-            MODE_PRIVATE
+            Context.MODE_PRIVATE
         )
 
         val packageName = prefs.getString(
@@ -31,7 +32,8 @@ class CircleToSearchSession(
 
         if (packageName != null) {
             val launchIntent =
-                sessionService.packageManager.getLaunchIntentForPackage(packageName)
+                sessionService.packageManager
+                    .getLaunchIntentForPackage(packageName)
 
             if (launchIntent != null) {
                 launchIntent.addFlags(
