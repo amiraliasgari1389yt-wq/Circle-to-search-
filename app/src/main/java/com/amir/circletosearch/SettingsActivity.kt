@@ -1,7 +1,6 @@
 package com.amir.circletosearch
 
 import android.content.Intent
-import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Gravity
@@ -82,4 +81,3 @@ class SettingsActivity : android.app.Activity() {
         setContentView(layout)
     }
 }
-
