@@ -1,7 +1,6 @@
 package com.amir.circletosearch
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.service.voice.VoiceInteractionSession
 import android.service.voice.VoiceInteractionSessionService
@@ -14,31 +13,27 @@ class CircleToSearchSessionService : VoiceInteractionSessionService() {
 }
 
 class CircleToSearchSession(
-    private val service: VoiceInteractionSessionService
+    service: VoiceInteractionSessionService
 ) : VoiceInteractionSession(service) {
 
     override fun onShow(args: Bundle?, showFlags: Int) {
         super.onShow(args, showFlags)
-        launchTarget()
-    }
 
-    private fun launchTarget() {
-        val prefs: SharedPreferences =
-            service.getSharedPreferences("circle_to_search", 0)
+        val prefs = getSharedPreferences("circle_to_search", 0)
+        val packageName = prefs.getString("target_package", null)
 
-        val packageName =
-            prefs.getString("target_package", null) ?: return
+        if (packageName != null) {
+            val intent = packageManager.getLaunchIntentForPackage(packageName)
 
-        val launchIntent =
-            service.packageManager.getLaunchIntentForPackage(packageName)
-                ?: return
+            if (intent != null) {
+                intent.addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                )
+                startActivity(intent)
+            }
+        }
 
-        launchIntent.addFlags(
-            Intent.FLAG_ACTIVITY_NEW_TASK or
-            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        )
-
-        service.startActivity(launchIntent)
-        finish()
+        hide()
     }
 }
