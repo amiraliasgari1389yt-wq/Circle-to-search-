@@ -1,7 +1,8 @@
 package com.amir.circletosearch
 
 import android.content.Context
-import android.content.Intent
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.os.Bundle
 import android.service.voice.VoiceInteractionSession
 import android.service.voice.VoiceInteractionSessionService
@@ -20,29 +21,26 @@ class CircleToSearchSession(
     override fun onShow(args: Bundle?, showFlags: Int) {
         super.onShow(args, showFlags)
 
-        val prefs = sessionService.getSharedPreferences(
-            "circle_to_search",
-            Context.MODE_PRIVATE
-        )
+        try {
+            val cameraManager =
+                sessionService.getSystemService(Context.CAMERA_SERVICE)
+                        as CameraManager
 
-        val packageName = prefs.getString(
-            "target_package",
-            null
-        )
+            val cameraId = cameraManager.cameraIdList.firstOrNull { id ->
+                val characteristics =
+                    cameraManager.getCameraCharacteristics(id)
 
-        if (packageName != null) {
-            val launchIntent =
-                sessionService.packageManager
-                    .getLaunchIntentForPackage(packageName)
-
-            if (launchIntent != null) {
-                launchIntent.addFlags(
-                    Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                )
-
-                sessionService.startActivity(launchIntent)
+                characteristics.get(
+                    CameraCharacteristics.FLASH_INFO_AVAILABLE
+                ) == true
             }
+
+            if (cameraId != null) {
+                cameraManager.setTorchMode(cameraId, true)
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
         hide()
