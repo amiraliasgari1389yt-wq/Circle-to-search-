@@ -2,7 +2,6 @@ package com.amir.circletosearch
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Bundle
 import android.service.voice.VoiceInteractionService
 
 class CircleToSearchAssistantService : VoiceInteractionService() {
@@ -12,11 +11,6 @@ class CircleToSearchAssistantService : VoiceInteractionService() {
 
     override fun onReady() {
         super.onReady()
-        launchTarget()
-    }
-
-    override fun onNewArgs(args: Bundle?) {
-        super.onNewArgs(args)
         launchTarget()
     }
 
