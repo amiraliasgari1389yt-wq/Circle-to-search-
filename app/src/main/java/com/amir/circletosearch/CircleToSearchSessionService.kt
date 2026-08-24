@@ -13,24 +13,33 @@ class CircleToSearchSessionService : VoiceInteractionSessionService() {
 }
 
 class CircleToSearchSession(
-    service: VoiceInteractionSessionService
-) : VoiceInteractionSession(service) {
+    private val sessionService: VoiceInteractionSessionService
+) : VoiceInteractionSession(sessionService) {
 
     override fun onShow(args: Bundle?, showFlags: Int) {
         super.onShow(args, showFlags)
 
-        val prefs = getSharedPreferences("circle_to_search", 0)
-        val packageName = prefs.getString("target_package", null)
+        val prefs = sessionService.getSharedPreferences(
+            "circle_to_search",
+            MODE_PRIVATE
+        )
+
+        val packageName = prefs.getString(
+            "target_package",
+            null
+        )
 
         if (packageName != null) {
-            val intent = packageManager.getLaunchIntentForPackage(packageName)
+            val launchIntent =
+                sessionService.packageManager.getLaunchIntentForPackage(packageName)
 
-            if (intent != null) {
-                intent.addFlags(
+            if (launchIntent != null) {
+                launchIntent.addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                 )
-                startActivity(intent)
+
+                sessionService.startActivity(launchIntent)
             }
         }
 
